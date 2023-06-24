@@ -1,5 +1,10 @@
 package teo.sprint.navogue.domain.memo.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +14,11 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import teo.sprint.navogue.domain.memo.data.req.MemoAddReq;
 import teo.sprint.navogue.domain.memo.data.res.MemoAddRes;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 public class MemoServiceImpl implements MemoService {
@@ -23,19 +33,18 @@ public class MemoServiceImpl implements MemoService {
 
     @Override
     public MemoAddRes addMemo(MemoAddReq memoAddReq) throws Exception {
-        String requestBody = "{\"document\": \"키워드 추출 API 입니다. 문장을 분리하고 명사를 추출하여 빈도와 함께 반환합니다.\"}";
-        System.out.println(getKeywords(memoAddReq.getContent()));
+        List<String> keywords = getKeywords(memoAddReq.getContent());
 
-        return null;
+        return new MemoAddRes(1);
     }
 
-    public String getKeywords(String content) {
+    private List<String> getKeywords(String content) throws Exception {
         String url = "https://api.matgim.ai/54edkvw2hn/api-keyword";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("x-auth-token", apiKey);
 
-        String requestBody = "{\"document\": \"키워드 추출 API 입니다. 문장을 분리하고 명사를 추출하여 빈도와 함께 반환합니다.\"}";
+        String requestBody = "{\"document\": \""+ content +"\"}";
 
         String responseBody = webClient.post()
                 .uri(url)
@@ -45,6 +54,38 @@ public class MemoServiceImpl implements MemoService {
                 .bodyToMono(String.class)
                 .block();
 
-        return responseBody;
+        return parseKeywords(responseBody);
+    }
+
+    private List<String> parseKeywords(String body) throws Exception {
+        List<String> selectedKeywords = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(body);
+        JsonNode keywordsNode = jsonNode.path("result").path("keywords");
+
+        List<Keyword> keywords = new ArrayList<>();
+        for (JsonNode keywordNode : keywordsNode) {
+            Keyword keyword = new Keyword();
+            keyword.setKeyword(keywordNode.get(0).asText());
+            keyword.setFrequency(keywordNode.get(1).asInt());
+            keywords.add(keyword);
+        }
+
+        Collections.shuffle(keywords);
+        keywords.sort(Comparator.comparingInt(Keyword::getFrequency).reversed());
+
+        int numToSelect = Math.min(5, keywords.size());
+        for (int i = 0; i < numToSelect; i++) {
+            selectedKeywords.add(keywords.get(i).getKeyword());
+        }
+
+        return selectedKeywords;
+    }
+
+    @Setter
+    @Getter
+    public class Keyword {
+        private String keyword;
+        private int frequency;
     }
 }

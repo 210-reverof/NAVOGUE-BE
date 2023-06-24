@@ -21,9 +21,9 @@ public class MemoServiceImplTest {
     @Mock
     private RestTemplate restTemplate;
 
-    @Test
-    void API_호출() throws Exception {
-        String result = memberService.getKeywords("문장을 분리하고 명사를 추출하여 빈도와 함께 반환합니다.");
-        System.out.println(result);
-    }
+//    @Test
+//    void API_호출() throws Exception {
+//        String result = memberService.getKeywords("문장을 분리하고 명사를 추출하여 빈도와 함께 반환합니다.");
+//        System.out.println(result);
+//    }
 }

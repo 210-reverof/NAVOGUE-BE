@@ -10,13 +10,11 @@ import teo.sprint.navogue.domain.memo.service.MemoService;
 @RestController
 @RequestMapping("/memo")
 public class MemoController {
-
     @Autowired
     private MemoService memoService;
 
     @PostMapping
     public ResponseEntity<MemoAddRes> addMemo(@RequestBody MemoAddReq memoAddReq) throws Exception {
-        System.out.println("5555");
         return ResponseEntity.ok(memoService.addMemo(memoAddReq));
     }
 }
