@@ -12,6 +12,6 @@ import lombok.Setter;
 public class Tag {
 
     @Id
-    @Column(length = 200)
+    @Column(length = 100)
     private String name;
 }
