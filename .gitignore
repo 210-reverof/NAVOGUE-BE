@@ -1,0 +1,27 @@
+# Gradle specific
+.gradle
+/build/
+
+# IntelliJ IDEA specific
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Compiled class file
+*.class
+
+# Log files
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Spring Boot specific
+target/
+
+src/main/resources/external/
+
+# Exclude application properties file for local development
+src/main/resources/application-local.properties
