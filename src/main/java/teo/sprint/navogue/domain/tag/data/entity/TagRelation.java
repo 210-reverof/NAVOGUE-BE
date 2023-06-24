@@ -27,4 +27,9 @@ public class TagRelation {
         this.tag = tag;
         this.memo = memo;
     }
+
+    public TagRelation(Memo memo, Tag tag) {
+        this.memo = memo;
+        this.tag = tag;
+    }
 }

@@ -14,4 +14,11 @@ public class Tag {
     @Id
     @Column(length = 100)
     private String name;
+    public Tag() {
+    }
+
+    public Tag(String name) {
+        this.name = name;
+    }
+
 }
