@@ -1,8 +1,10 @@
 package teo.sprint.navogue.domain.memo.data.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Memo {
@@ -18,10 +20,18 @@ public class Memo {
     private String content;
 
     @Column
+    @Enumerated(EnumType.STRING)
+    private ContentType contentType;
+
+    @Column
     private boolean isPinned;
+
+    @OneToMany(mappedBy = "memo")
+    private List<TagRelation> tagRelations;
 
     private LocalDateTime createdAt;
 
+    @Builder
     public Memo(int id, int userId, String content, boolean isPinned, LocalDateTime createdAt) {
         this.id = id;
         this.userId = userId;

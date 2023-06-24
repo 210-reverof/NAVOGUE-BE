@@ -7,11 +7,13 @@ import lombok.Setter;
 @Setter
 public class MemoAddReq {
     private String content;
+    private String contentType;
 
     public MemoAddReq() {
     }
 
-    public MemoAddReq(String content) {
+    public MemoAddReq(String content, String contentType) {
         this.content = content;
+        this.contentType = contentType;
     }
 }
