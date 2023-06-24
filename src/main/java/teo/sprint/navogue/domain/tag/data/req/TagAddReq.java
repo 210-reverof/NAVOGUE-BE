@@ -12,4 +12,9 @@ public class TagAddReq {
     private List<String> tagNames;
 
     public TagAddReq() {}
+
+    public TagAddReq(int memoId, List<String> tagNames) {
+        this.memoId = memoId;
+        this.tagNames = tagNames;
+    }
 }

@@ -20,6 +20,8 @@ import teo.sprint.navogue.domain.memo.data.req.MemoAddReq;
 import teo.sprint.navogue.domain.memo.data.res.MemoAddRes;
 import teo.sprint.navogue.domain.memo.repository.MemoRepository;
 import teo.sprint.navogue.domain.memo.repository.OpenGraphRepository;
+import teo.sprint.navogue.domain.tag.data.req.TagAddReq;
+import teo.sprint.navogue.domain.tag.service.TagService;
 
 import java.net.URL;
 import java.util.*;
@@ -29,11 +31,13 @@ public class MemoServiceImpl implements MemoService {
     private final WebClient webClient;
     private final MemoRepository memoRepository;
     private final OpenGraphRepository openGraphRepository;
+    private final TagService tagService;
 
-    public MemoServiceImpl(WebClient.Builder webClientBuilder, MemoRepository memoRepository, OpenGraphRepository openGraphRepository) {
+    public MemoServiceImpl(WebClient.Builder webClientBuilder, MemoRepository memoRepository, OpenGraphRepository openGraphRepository, TagService tagService) {
         this.webClient = webClientBuilder.build();
         this.memoRepository = memoRepository;
         this.openGraphRepository = openGraphRepository;
+        this.tagService = tagService;
     }
 
     @Value("${api.key}")
@@ -55,8 +59,7 @@ public class MemoServiceImpl implements MemoService {
         }
 
         keywords = getKeywords(target);
-
-
+        tagService.addTag(new TagAddReq(memo.getId(),keywords));
 
         return new MemoAddRes(memo.getId());
     }
