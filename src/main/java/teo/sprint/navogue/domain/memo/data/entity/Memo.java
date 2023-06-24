@@ -37,8 +37,7 @@ public class Memo {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public Memo() {
-    }
+    public Memo() {}
 
     @Builder
     public Memo(int id, int userId, String content, boolean isPinned, LocalDateTime createdAt) {
