@@ -14,24 +14,26 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import teo.sprint.navogue.domain.memo.data.entity.ContentType;
 import teo.sprint.navogue.domain.memo.data.entity.Memo;
 import teo.sprint.navogue.domain.memo.data.entity.OpenGraph;
 import teo.sprint.navogue.domain.memo.data.req.MemoAddReq;
 import teo.sprint.navogue.domain.memo.data.res.MemoAddRes;
+import teo.sprint.navogue.domain.memo.repository.MemoRepository;
+import teo.sprint.navogue.domain.memo.repository.OpenGraphRepository;
 
 import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
 public class MemoServiceImpl implements MemoService {
     private final WebClient webClient;
+    private final MemoRepository memoRepository;
+    private final OpenGraphRepository openGraphRepository;
 
-    public MemoServiceImpl(WebClient.Builder webClientBuilder) {
+    public MemoServiceImpl(WebClient.Builder webClientBuilder, MemoRepository memoRepository, OpenGraphRepository openGraphRepository) {
         this.webClient = webClientBuilder.build();
+        this.memoRepository = memoRepository;
+        this.openGraphRepository = openGraphRepository;
     }
 
     @Value("${api.key}")
@@ -39,22 +41,27 @@ public class MemoServiceImpl implements MemoService {
 
     @Override
     public MemoAddRes addMemo(MemoAddReq memoAddReq) throws Exception {
-        Memo memo = new Memo();
+        Memo memo = new Memo(memoAddReq);
+        memo = memoRepository.save(memo);
         List<String> keywords;
         OpenGraph og;
 
         String target = memoAddReq.getContent();
         if (memoAddReq.getContentType().equals("URL")) {
             og = extractOpenGraph(memoAddReq.getContent());
+            og.setMemo(memo);
+            openGraphRepository.save(og);
             target = og.getOgTitle();
         }
 
         keywords = getKeywords(target);
 
-        return new MemoAddRes(1);
+
+
+        return new MemoAddRes(memo.getId());
     }
 
-    public static OpenGraph extractOpenGraph(String url) throws Exception {
+    private OpenGraph extractOpenGraph(String url) throws Exception {
         Document doc = Jsoup.parse(new URL(url).openStream(), "UTF-8", url);
 
         Elements metaTags = doc.select("meta[property^=og:]");

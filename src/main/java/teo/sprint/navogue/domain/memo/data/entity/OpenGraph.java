@@ -1,9 +1,6 @@
 package teo.sprint.navogue.domain.memo.data.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,6 +11,9 @@ import lombok.ToString;
 @ToString
 public class OpenGraph {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     @OneToOne
     private Memo memo;
 
@@ -28,7 +28,8 @@ public class OpenGraph {
 
     public OpenGraph() {}
 
-    public OpenGraph(Memo memo, String ogTitle, String ogDesc, String ogImageUrl) {
+    public OpenGraph(int id, Memo memo, String ogTitle, String ogDesc, String ogImageUrl) {
+        this.id = id;
         this.memo = memo;
         this.ogTitle = ogTitle;
         this.ogDesc = ogDesc;
