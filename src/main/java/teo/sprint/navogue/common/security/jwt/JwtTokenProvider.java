@@ -46,12 +46,16 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = authUserService.loadUserByUsername(this.getEmail(token));
+        UserDetails userDetails = authUserService.loadUserByUsername(getId(token).toString());
         return new UsernamePasswordAuthenticationToken(userDetails, "");
     }
 
     public String getEmail(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public Long getId(String token) {
+        return userRepository.findByEmail(this.getEmail(token)).get().getId();
     }
     public String resolveAccessToken(HttpServletRequest request) {
         if (request.getHeader("Authorization") != null) {
