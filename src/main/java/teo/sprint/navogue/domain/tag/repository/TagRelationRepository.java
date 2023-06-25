@@ -13,4 +13,7 @@ public interface TagRelationRepository extends JpaRepository<TagRelation, Intege
     @Transactional
     @Query("DELETE FROM TagRelation r WHERE r.tag.name IN :tagNames AND r.memo.id = :memoId")
     void deleteByMemoIdAndTagNames(int memoId, List<String> tagNames);
+
+    @Query("SELECT DISTINCT tr.tag.name FROM TagRelation tr WHERE tr.memo.user.id = :id")
+    List<String> findAllByUser(Long id);
 }
