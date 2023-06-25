@@ -23,6 +23,17 @@ public class MemoController {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
+    @GetMapping("/token")
+    public ResponseEntity<String> testToken(@RequestHeader("Access-Token") String accessToken) throws Exception {
+        String email = jwtTokenProvider.getEmail(accessToken);
+        return ResponseEntity.ok("토큰 이메일 : " + email);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test() throws Exception {
+        return ResponseEntity.ok("CORS 극복 성공맨");
+    }
+
     @PostMapping
     public ResponseEntity<MemoAddRes> addMemo(@RequestBody MemoAddReq memoAddReq,
                                               @RequestHeader("Access-Token") String accessToken) throws Exception {

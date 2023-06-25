@@ -30,4 +30,13 @@ public class MemoListRes {
         this.isPinned = memo.isPinned();
         this.createdAt = memo.getCreatedAt();
     }
+
+    public MemoListRes(Memo memo, OpenGraph og) {
+        this.id = memo.getId();
+        this.content = memo.getContent();
+        this.contentType = memo.getContentType();
+        this.isPinned = memo.isPinned();
+        this.createdAt = memo.getCreatedAt();
+        this.openGraph = og;
+    }
 }
