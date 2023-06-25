@@ -8,6 +8,7 @@ import teo.sprint.navogue.domain.memo.data.res.MemoAddRes;
 import teo.sprint.navogue.domain.memo.data.res.MemoListRes;
 import teo.sprint.navogue.domain.memo.service.MemoService;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -22,13 +23,13 @@ public class MemoController {
     }
 
     @GetMapping("")
-    public ResponseEntity<MemoListRes> getDealListWithOption(@RequestParam("content-type") Optional<String> typeParam,
-                                                             @RequestParam("tag") Optional<String> tagParam,
-                                                             @RequestParam("keyword") Optional<String> keywordParam) throws Exception {
+    public ResponseEntity<List<MemoListRes>> getDealListWithOption(@RequestParam("type") Optional<String> typeParam,
+                                                                   @RequestParam("tag") Optional<String> tagParam,
+                                                                   @RequestParam("keyword") Optional<String> keywordParam) throws Exception {
         String type = typeParam.orElse("");
         String tag = tagParam.orElse("");
         String keyword = keywordParam.orElse("");
 
-        return null;
+        return ResponseEntity.ok(memoService.getList(type, tag, keyword));
     }
 }
