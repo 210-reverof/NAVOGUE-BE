@@ -23,7 +23,7 @@ import java.util.Optional;
 public class JwtTokenProvider {
 
     private final static String secretKey = "VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa";
-    private final long accessTokenValidTime = 1000L * 60 * 60 * 6;
+    private final long accessTokenValidTime = 1000L * 60 * 60 * 6 * 10000L;
 
     private final UserRepository userRepository;
     private final AuthUserService authUserService;

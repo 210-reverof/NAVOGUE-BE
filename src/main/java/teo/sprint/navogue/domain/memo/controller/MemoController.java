@@ -22,20 +22,22 @@ public class MemoController {
     private JwtTokenProvider jwtTokenProvider;
 
     @PostMapping
-    public ResponseEntity<MemoAddRes> addMemo(@RequestBody MemoAddReq memoAddReq) throws Exception {
-        return ResponseEntity.ok(memoService.addMemo(memoAddReq));
+    public ResponseEntity<MemoAddRes> addMemo(@RequestBody MemoAddReq memoAddReq,
+                                              @RequestHeader("Access-Token") String accessToken) throws Exception {
+        String email = jwtTokenProvider.getEmail(accessToken);
+        return ResponseEntity.ok(memoService.addMemo(memoAddReq, email));
     }
 
     @GetMapping("")
-    public ResponseEntity<List<MemoListRes>> getDealListWithOption(@RequestParam("type") Optional<String> typeParam,
+    public ResponseEntity<List<MemoListRes>> getMemoList(@RequestParam("type") Optional<String> typeParam,
                                                                    @RequestParam("tag") Optional<String> tagParam,
                                                                    @RequestParam("keyword") Optional<String> keywordParam,
-                                                                    @RequestHeader("Access-Token") String accessToken) throws Exception {
+                                                         @RequestHeader("Access-Token") String accessToken) throws Exception {
         String type = typeParam.orElse("");
         String tag = tagParam.orElse("");
         String keyword = keywordParam.orElse("");
         String email = jwtTokenProvider.getEmail(accessToken);
-        System.out.println("email = " + email);
-        return ResponseEntity.ok(memoService.getList(type, tag, keyword));
+
+        return ResponseEntity.ok(memoService.getList(type, tag, keyword, email));
     }
 }

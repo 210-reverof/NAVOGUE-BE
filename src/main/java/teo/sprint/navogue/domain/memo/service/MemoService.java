@@ -7,7 +7,7 @@ import teo.sprint.navogue.domain.memo.data.res.MemoListRes;
 import java.util.List;
 
 public interface MemoService {
-    MemoAddRes addMemo(MemoAddReq memoAddReq) throws Exception;
+    MemoAddRes addMemo(MemoAddReq memoAddReq, String email) throws Exception;
 
-    List<MemoListRes> getList(String type, String tag, String keyword);
+    List<MemoListRes> getList(String type, String tag, String keyword, String email);
 }

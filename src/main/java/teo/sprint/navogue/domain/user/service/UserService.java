@@ -35,12 +35,11 @@ public class UserService {
     public UserLoginRes login(String code) throws Exception {
         String access_token = getAccessToken(code);
         String email = getUserInfo(access_token);
-        System.out.println("==========" + access_token + "   " + email);
 
 
         String accessToken = jwtTokenProvider.createAccessToken(email);
 
-        if (userRepository.existsByEmail(email) == false) {
+        if (!userRepository.existsByEmail(email)) {
             User user = new User(email);
             User saveUser = userRepository.save(user);
             return new UserLoginRes(saveUser.getId(), accessToken);
@@ -81,9 +80,6 @@ public class UserService {
             response.append(inputLine);
         }
         in.close();
-
-        System.out.println("Response Code: " + responseCode);
-        System.out.println("Response Body: " + response.toString());
         String jsonResponse = response.toString();
 
         int startIndex = jsonResponse.indexOf("\"access_token\":\"") + 16;
@@ -112,7 +108,7 @@ public class UserService {
         while ((line = br.readLine()) != null) {
             result += line;
         }
-        log.info("result ==========" + result);
+
         JsonParser parser = new JsonParser();
         JsonElement element = parser.parse(result);
 

@@ -24,6 +24,8 @@ import teo.sprint.navogue.domain.memo.repository.MemoRepositorySupport;
 import teo.sprint.navogue.domain.memo.repository.OpenGraphRepository;
 import teo.sprint.navogue.domain.tag.data.req.TagAddReq;
 import teo.sprint.navogue.domain.tag.service.TagService;
+import teo.sprint.navogue.domain.user.data.entity.User;
+import teo.sprint.navogue.domain.user.repository.UserRepository;
 
 import java.net.URL;
 import java.util.*;
@@ -32,13 +34,15 @@ import java.util.*;
 public class MemoServiceImpl implements MemoService {
     private final WebClient webClient;
     private final MemoRepository memoRepository;
+    private final UserRepository userRepository;
     private final OpenGraphRepository openGraphRepository;
     private final MemoRepositorySupport memoRepositorySupport;
     private final TagService tagService;
 
-    public MemoServiceImpl(WebClient.Builder webClientBuilder, MemoRepository memoRepository, OpenGraphRepository openGraphRepository, MemoRepositorySupport memoRepositorySupport, TagService tagService) {
+    public MemoServiceImpl(WebClient.Builder webClientBuilder, MemoRepository memoRepository, UserRepository userRepository, OpenGraphRepository openGraphRepository, MemoRepositorySupport memoRepositorySupport, TagService tagService) {
         this.webClient = webClientBuilder.build();
         this.memoRepository = memoRepository;
+        this.userRepository = userRepository;
         this.openGraphRepository = openGraphRepository;
         this.memoRepositorySupport = memoRepositorySupport;
         this.tagService = tagService;
@@ -48,8 +52,10 @@ public class MemoServiceImpl implements MemoService {
     private String apiKey;
 
     @Override
-    public MemoAddRes addMemo(MemoAddReq memoAddReq) throws Exception {
+    public MemoAddRes addMemo(MemoAddReq memoAddReq, String email) throws Exception {
         Memo memo = new Memo(memoAddReq);
+        User user = userRepository.findByEmail(email).get();
+        memo.setUser(user);
         memo = memoRepository.save(memo);
         List<String> keywords;
         OpenGraph og;
@@ -69,8 +75,9 @@ public class MemoServiceImpl implements MemoService {
     }
 
     @Override
-    public List<MemoListRes> getList(String type, String tag, String keyword) {
-        return memoRepositorySupport.getList(type, tag, keyword);
+    public List<MemoListRes> getList(String type, String tag, String keyword, String email) {
+        User user = userRepository.findByEmail(email).get();
+        return memoRepositorySupport.getList(type, tag, keyword, user);
     }
 
     private OpenGraph extractOpenGraph(String url) throws Exception {

@@ -1,6 +1,7 @@
 package teo.sprint.navogue.domain.memo.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -13,6 +14,8 @@ import teo.sprint.navogue.domain.memo.data.entity.QMemo;
 import teo.sprint.navogue.domain.memo.data.res.MemoListRes;
 import teo.sprint.navogue.domain.tag.data.entity.QTag;
 import teo.sprint.navogue.domain.tag.data.entity.QTagRelation;
+import teo.sprint.navogue.domain.user.data.entity.QUser;
+import teo.sprint.navogue.domain.user.data.entity.User;
 
 import java.util.List;
 
@@ -25,13 +28,15 @@ public class MemoRepositorySupport extends QuerydslRepositorySupport {
         super(Memo.class);
         this.jpaQueryFactory = jpaQueryFactory;
     }
-    public List<MemoListRes> getList(String type, String tag, String keyword) {
+    public List<MemoListRes> getList(String type, String tag, String keyword, User user) {
         QMemo m = QMemo.memo;
         QTagRelation tr = QTagRelation.tagRelation;
         QTag t = QTag.tag;
+        QUser u = QUser.user;
+        OrderSpecifier<Boolean> orderByPinned = QMemo.memo.isPinned.desc();  // isPinned 내림차순으로 정렬
 
         BooleanBuilder builder = new BooleanBuilder();
-
+        builder.and(m.user.id.eq(user.getId()));
         if (!type.equals("")) builder.and(m.contentType.eq(ContentType.valueOf(type)));
         if (!keyword.equals("")) builder.and(m.content.contains(keyword));
         if (!tag.equals("")) {
@@ -47,6 +52,7 @@ public class MemoRepositorySupport extends QuerydslRepositorySupport {
                 .select(Projections.constructor(MemoListRes.class, m))
                 .from(m)
                 .where(builder)
+                .orderBy(orderByPinned)
                 .fetch();
 
         memoListResList.forEach(memoListRes -> {
