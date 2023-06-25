@@ -2,6 +2,7 @@ package teo.sprint.navogue.domain.memo.service;
 
 import org.springframework.data.domain.Slice;
 import teo.sprint.navogue.domain.memo.data.req.MemoAddReq;
+import teo.sprint.navogue.domain.memo.data.req.MemoUpdateReq;
 import teo.sprint.navogue.domain.memo.data.res.MemoAddRes;
 import teo.sprint.navogue.domain.memo.data.res.MemoListRes;
 
@@ -11,4 +12,8 @@ public interface MemoService {
     Slice<MemoListRes> getList(int page, String type, String tag, String keyword, String email);
 
     int pin(int memoId);
+
+    int delete(int memoId);
+
+    int update(MemoUpdateReq memoUpdateReq);
 }

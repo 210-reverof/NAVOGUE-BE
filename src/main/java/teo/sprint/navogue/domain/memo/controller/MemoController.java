@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import teo.sprint.navogue.common.security.jwt.JwtTokenProvider;
 import teo.sprint.navogue.domain.memo.data.entity.Memo;
 import teo.sprint.navogue.domain.memo.data.req.MemoAddReq;
-import teo.sprint.navogue.domain.memo.data.res.MemoAddRes;
-import teo.sprint.navogue.domain.memo.data.res.MemoListRes;
-import teo.sprint.navogue.domain.memo.data.res.MemoPinRes;
+import teo.sprint.navogue.domain.memo.data.req.MemoUpdateReq;
+import teo.sprint.navogue.domain.memo.data.res.*;
 import teo.sprint.navogue.domain.memo.service.MemoService;
 
 import java.util.List;
@@ -43,6 +42,16 @@ public class MemoController {
         String email = jwtTokenProvider.getEmail(accessToken);
 
         return ResponseEntity.ok(memoService.getList(page, type, tag, keyword, email));
+    }
+
+    @DeleteMapping("/{memoId}")
+    public ResponseEntity<MemoDeleteRes> delete(@PathVariable("memoId") int memoId) throws Exception {
+        return ResponseEntity.ok(new MemoDeleteRes(memoService.delete(memoId)));
+    }
+
+    @PatchMapping
+    public ResponseEntity<MemoUpdateRes> update(@RequestBody MemoUpdateReq memoUpdateReq) throws Exception {
+        return ResponseEntity.ok(new MemoUpdateRes(memoService.update(memoUpdateReq)));
     }
 
     @PatchMapping("/pin/{memoId}")

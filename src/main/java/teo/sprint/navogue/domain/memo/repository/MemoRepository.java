@@ -14,4 +14,12 @@ public interface MemoRepository extends JpaRepository<Memo, Integer> {
     @Transactional
     @Query("UPDATE Memo m SET m.isPinned = CASE WHEN m.isPinned = false THEN true ELSE false END WHERE m.id = :memoId")
     int pinMemo(@Param("memoId") int memoId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Memo m SET m.content = :content WHERE m.id = :id")
+    void updateContent(int id, String content);
+
+    @Transactional
+    void deleteById(int id);
 }

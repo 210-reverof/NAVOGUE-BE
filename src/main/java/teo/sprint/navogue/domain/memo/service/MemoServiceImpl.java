@@ -20,12 +20,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 import teo.sprint.navogue.domain.memo.data.entity.Memo;
 import teo.sprint.navogue.domain.memo.data.entity.OpenGraph;
 import teo.sprint.navogue.domain.memo.data.req.MemoAddReq;
+import teo.sprint.navogue.domain.memo.data.req.MemoUpdateReq;
 import teo.sprint.navogue.domain.memo.data.res.MemoAddRes;
 import teo.sprint.navogue.domain.memo.data.res.MemoListRes;
 import teo.sprint.navogue.domain.memo.repository.MemoRepository;
 import teo.sprint.navogue.domain.memo.repository.MemoRepositorySupport;
 import teo.sprint.navogue.domain.memo.repository.OpenGraphRepository;
 import teo.sprint.navogue.domain.tag.data.req.TagAddReq;
+import teo.sprint.navogue.domain.tag.repository.TagRelationRepository;
 import teo.sprint.navogue.domain.tag.service.TagService;
 import teo.sprint.navogue.domain.user.data.entity.User;
 import teo.sprint.navogue.domain.user.repository.UserRepository;
@@ -39,14 +41,16 @@ public class MemoServiceImpl implements MemoService {
     private final MemoRepository memoRepository;
     private final UserRepository userRepository;
     private final OpenGraphRepository openGraphRepository;
+    private final TagRelationRepository tagRelationRepository;
     private final MemoRepositorySupport memoRepositorySupport;
     private final TagService tagService;
 
-    public MemoServiceImpl(WebClient.Builder webClientBuilder, MemoRepository memoRepository, UserRepository userRepository, OpenGraphRepository openGraphRepository, MemoRepositorySupport memoRepositorySupport, TagService tagService) {
+    public MemoServiceImpl(WebClient.Builder webClientBuilder, MemoRepository memoRepository, UserRepository userRepository, OpenGraphRepository openGraphRepository, TagRelationRepository tagRelationRepository, MemoRepositorySupport memoRepositorySupport, TagService tagService) {
         this.webClient = webClientBuilder.build();
         this.memoRepository = memoRepository;
         this.userRepository = userRepository;
         this.openGraphRepository = openGraphRepository;
+        this.tagRelationRepository = tagRelationRepository;
         this.memoRepositorySupport = memoRepositorySupport;
         this.tagService = tagService;
     }
@@ -91,6 +95,20 @@ public class MemoServiceImpl implements MemoService {
     public int pin(int memoId) {
         memoRepository.pinMemo(memoId);
         return memoId;
+    }
+
+    @Override
+    public int delete(int memoId) {
+        tagRelationRepository.deleteByMemoId(memoId);
+        openGraphRepository.deleteByMemoId(memoId);
+        memoRepository.deleteById(memoId);
+        return memoId;
+    }
+
+    @Override
+    public int update(MemoUpdateReq memoUpdateReq) {
+        memoRepository.updateContent(memoUpdateReq.getId(), memoUpdateReq.getContent());
+        return memoUpdateReq.getId();
     }
 
     private OpenGraph extractOpenGraph(String url) throws Exception {
