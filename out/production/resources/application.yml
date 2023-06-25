@@ -1,13 +1,7 @@
 spring:
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/test
-    username: root
-    password: 1234
+  config:
+    import:
+      - classpath:/external/external.yml
   jpa:
     hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        #show_sql: true
-        format_sql: ture
+      ddl-auto: update

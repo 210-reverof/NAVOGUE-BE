@@ -23,7 +23,7 @@ import java.util.Optional;
 public class JwtTokenProvider {
 
     private final static String secretKey = "VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa";
-    private final long accessTokenValidTime = 1000L * 60 * 60 * 6;
+    private final long accessTokenValidTime = 1000L * 60 * 60 * 6 * 10000L;
 
     private final UserRepository userRepository;
     private final AuthUserService authUserService;
@@ -46,12 +46,16 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = authUserService.loadUserByUsername(this.getEmail(token));
+        UserDetails userDetails = authUserService.loadUserByUsername(getId(token).toString());
         return new UsernamePasswordAuthenticationToken(userDetails, "");
     }
 
     public String getEmail(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public Long getId(String token) {
+        return userRepository.findByEmail(this.getEmail(token)).get().getId();
     }
     public String resolveAccessToken(HttpServletRequest request) {
         if (request.getHeader("Authorization") != null) {

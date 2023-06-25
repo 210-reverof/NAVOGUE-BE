@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import teo.sprint.navogue.domain.memo.data.req.MemoAddReq;
 import teo.sprint.navogue.domain.tag.data.entity.TagRelation;
+import teo.sprint.navogue.domain.user.data.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,9 +20,8 @@ public class Memo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    // TODO :: 연관시키기
-    // @ManyToOne
-    private int userId;
+    @ManyToOne
+    private User user;
 
     @Column
     private String content;
@@ -40,10 +40,11 @@ public class Memo {
     public Memo() {}
 
     @Builder
-    public Memo(int id, int userId, String content, boolean isPinned, LocalDateTime createdAt) {
+    public Memo(int id, User user, String content, ContentType contentType, boolean isPinned, LocalDateTime createdAt) {
         this.id = id;
-        this.userId = userId;
+        this.user = user;
         this.content = content;
+        this.contentType = contentType;
         this.isPinned = isPinned;
         this.createdAt = createdAt;
     }

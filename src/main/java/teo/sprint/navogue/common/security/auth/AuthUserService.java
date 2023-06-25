@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import teo.sprint.navogue.domain.user.data.entity.User;
 import teo.sprint.navogue.domain.user.repository.UserRepository;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthUserService implements UserDetailsService {
@@ -16,8 +18,11 @@ public class AuthUserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
-        User user = userRepository.findById(Long.valueOf(id)).orElseThrow(() -> new UsernameNotFoundException("조회된 회원이 없습니다."));
+        Optional<User> user = userRepository.findById(Long.valueOf(id));
 
-        return new AuthUser(user.getId(), user.getEmail());
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("회원이 존재하지 않습니다.");
+        }
+        return new AuthUser(user.get().getId().toString());
     }
 }
