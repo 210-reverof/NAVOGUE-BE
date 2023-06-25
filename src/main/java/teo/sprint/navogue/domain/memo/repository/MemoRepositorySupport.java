@@ -6,6 +6,9 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 import teo.sprint.navogue.domain.memo.data.entity.ContentType;
@@ -66,5 +69,16 @@ public class MemoRepositorySupport extends QuerydslRepositorySupport {
         });
 
         return memoListResList;
+    }
+
+    public Slice<MemoListRes> getSlice(Pageable pageable, List<MemoListRes> listRes) {
+        boolean hasNext = false;
+
+        if (listRes.size() > pageable.getPageSize()) {
+            hasNext = true;
+            listRes.remove(pageable.getPageSize());
+        }
+
+        return new SliceImpl<>(listRes, pageable, hasNext);
     }
 }

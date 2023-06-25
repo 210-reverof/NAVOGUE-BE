@@ -1,6 +1,7 @@
 package teo.sprint.navogue.domain.memo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import teo.sprint.navogue.common.security.jwt.JwtTokenProvider;
@@ -29,15 +30,16 @@ public class MemoController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<MemoListRes>> getMemoList(@RequestParam("type") Optional<String> typeParam,
-                                                                   @RequestParam("tag") Optional<String> tagParam,
-                                                                   @RequestParam("keyword") Optional<String> keywordParam,
-                                                         @RequestHeader("Access-Token") String accessToken) throws Exception {
+    public ResponseEntity<Slice<MemoListRes>> getMemoList(@RequestParam("page") int page,
+                                                          @RequestParam("type") Optional<String> typeParam,
+                                                          @RequestParam("tag") Optional<String> tagParam,
+                                                          @RequestParam("keyword") Optional<String> keywordParam,
+                                                          @RequestHeader("Access-Token") String accessToken) throws Exception {
         String type = typeParam.orElse("");
         String tag = tagParam.orElse("");
         String keyword = keywordParam.orElse("");
         String email = jwtTokenProvider.getEmail(accessToken);
 
-        return ResponseEntity.ok(memoService.getList(type, tag, keyword, email));
+        return ResponseEntity.ok(memoService.getList(page, type, tag, keyword, email));
     }
 }
