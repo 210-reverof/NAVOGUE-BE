@@ -5,9 +5,11 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import teo.sprint.navogue.common.security.jwt.JwtTokenProvider;
+import teo.sprint.navogue.domain.memo.data.entity.Memo;
 import teo.sprint.navogue.domain.memo.data.req.MemoAddReq;
 import teo.sprint.navogue.domain.memo.data.res.MemoAddRes;
 import teo.sprint.navogue.domain.memo.data.res.MemoListRes;
+import teo.sprint.navogue.domain.memo.data.res.MemoPinRes;
 import teo.sprint.navogue.domain.memo.service.MemoService;
 
 import java.util.List;
@@ -29,7 +31,7 @@ public class MemoController {
         return ResponseEntity.ok(memoService.addMemo(memoAddReq, email));
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<Slice<MemoListRes>> getMemoList(@RequestParam("page") int page,
                                                           @RequestParam("type") Optional<String> typeParam,
                                                           @RequestParam("tag") Optional<String> tagParam,
@@ -41,5 +43,10 @@ public class MemoController {
         String email = jwtTokenProvider.getEmail(accessToken);
 
         return ResponseEntity.ok(memoService.getList(page, type, tag, keyword, email));
+    }
+
+    @PatchMapping("/pin/{memoId}")
+    public ResponseEntity<MemoPinRes> pin(@PathVariable("memoId") int memoId, @RequestHeader("Access-Token") String accessToken) throws Exception {
+        return ResponseEntity.ok(new MemoPinRes(memoService.pin(memoId)));
     }
 }

@@ -56,6 +56,7 @@ public class MemoRepositorySupport extends QuerydslRepositorySupport {
                 .from(m)
                 .where(builder)
                 .orderBy(orderByPinned)
+                .orderBy(m.createdAt.desc())
                 .fetch();
 
         memoListResList.forEach(memoListRes -> {

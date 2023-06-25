@@ -87,6 +87,12 @@ public class MemoServiceImpl implements MemoService {
         return memoRepositorySupport.getSlice(pageRequest, memoList);
     }
 
+    @Override
+    public int pin(int memoId) {
+        memoRepository.pinMemo(memoId);
+        return memoId;
+    }
+
     private OpenGraph extractOpenGraph(String url) throws Exception {
         Document doc = Jsoup.parse(new URL(url).openStream(), "UTF-8", url);
 
