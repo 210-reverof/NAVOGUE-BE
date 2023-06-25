@@ -9,6 +9,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -75,9 +78,13 @@ public class MemoServiceImpl implements MemoService {
     }
 
     @Override
-    public List<MemoListRes> getList(String type, String tag, String keyword, String email) {
+    public Slice<MemoListRes> getList(int page, String type, String tag, String keyword, String email) {
         User user = userRepository.findByEmail(email).get();
-        return memoRepositorySupport.getList(type, tag, keyword, user);
+
+        List<MemoListRes> memoList = memoRepositorySupport.getList(type, tag, keyword, user);
+
+        PageRequest pageRequest = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return memoRepositorySupport.getSlice(pageRequest, memoList);
     }
 
     private OpenGraph extractOpenGraph(String url) throws Exception {
