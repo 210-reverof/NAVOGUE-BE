@@ -18,7 +18,9 @@ import teo.sprint.navogue.domain.memo.data.entity.Memo;
 import teo.sprint.navogue.domain.memo.data.entity.OpenGraph;
 import teo.sprint.navogue.domain.memo.data.req.MemoAddReq;
 import teo.sprint.navogue.domain.memo.data.res.MemoAddRes;
+import teo.sprint.navogue.domain.memo.data.res.MemoListRes;
 import teo.sprint.navogue.domain.memo.repository.MemoRepository;
+import teo.sprint.navogue.domain.memo.repository.MemoRepositorySupport;
 import teo.sprint.navogue.domain.memo.repository.OpenGraphRepository;
 import teo.sprint.navogue.domain.tag.data.req.TagAddReq;
 import teo.sprint.navogue.domain.tag.service.TagService;
@@ -31,12 +33,14 @@ public class MemoServiceImpl implements MemoService {
     private final WebClient webClient;
     private final MemoRepository memoRepository;
     private final OpenGraphRepository openGraphRepository;
+    private final MemoRepositorySupport memoRepositorySupport;
     private final TagService tagService;
 
-    public MemoServiceImpl(WebClient.Builder webClientBuilder, MemoRepository memoRepository, OpenGraphRepository openGraphRepository, TagService tagService) {
+    public MemoServiceImpl(WebClient.Builder webClientBuilder, MemoRepository memoRepository, OpenGraphRepository openGraphRepository, MemoRepositorySupport memoRepositorySupport, TagService tagService) {
         this.webClient = webClientBuilder.build();
         this.memoRepository = memoRepository;
         this.openGraphRepository = openGraphRepository;
+        this.memoRepositorySupport = memoRepositorySupport;
         this.tagService = tagService;
     }
 
@@ -62,6 +66,11 @@ public class MemoServiceImpl implements MemoService {
         tagService.addTag(new TagAddReq(memo.getId(),keywords));
 
         return new MemoAddRes(memo.getId());
+    }
+
+    @Override
+    public List<MemoListRes> getList(String type, String tag, String keyword) {
+        return memoRepositorySupport.getList(type, tag, keyword);
     }
 
     private OpenGraph extractOpenGraph(String url) throws Exception {
