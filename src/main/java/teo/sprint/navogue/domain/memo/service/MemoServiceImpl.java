@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import teo.sprint.navogue.domain.memo.data.entity.ContentType;
 import teo.sprint.navogue.domain.memo.data.entity.Memo;
 import teo.sprint.navogue.domain.memo.data.entity.OpenGraph;
 import teo.sprint.navogue.domain.memo.data.req.MemoAddReq;
@@ -116,7 +117,12 @@ public class MemoServiceImpl implements MemoService {
     }
 
     @Override
-    public int update(MemoUpdateReq memoUpdateReq) {
+    public int update(MemoUpdateReq memoUpdateReq) throws Exception {
+        if (memoRepository.findById(memoUpdateReq.getId()).get().getContentType().equals(ContentType.URL)) {
+            openGraphRepository.deleteByMemoId(memoUpdateReq.getId());
+            OpenGraph og = extractOpenGraph(memoUpdateReq.getContent());
+            openGraphRepository.save(og);
+        }
         memoRepository.updateContent(memoUpdateReq.getId(), memoUpdateReq.getContent());
         return memoUpdateReq.getId();
     }

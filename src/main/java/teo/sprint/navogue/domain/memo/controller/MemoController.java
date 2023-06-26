@@ -60,7 +60,7 @@ public class MemoController {
         return ResponseEntity.ok(new MemoDeleteRes(memoService.delete(memoId)));
     }
 
-    @PatchMapping
+    @PutMapping
     public ResponseEntity<MemoUpdateRes> update(@RequestBody MemoUpdateReq memoUpdateReq) throws Exception {
         return ResponseEntity.ok(new MemoUpdateRes(memoService.update(memoUpdateReq)));
     }
