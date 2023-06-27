@@ -15,5 +15,5 @@ public interface MemoService {
 
     int delete(int memoId);
 
-    int update(MemoUpdateReq memoUpdateReq);
+    int update(MemoUpdateReq memoUpdateReq) throws Exception;
 }

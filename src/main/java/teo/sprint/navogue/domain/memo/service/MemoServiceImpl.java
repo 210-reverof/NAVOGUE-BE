@@ -4,19 +4,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import teo.sprint.navogue.domain.memo.data.entity.ContentType;
 import teo.sprint.navogue.domain.memo.data.entity.Memo;
 import teo.sprint.navogue.domain.memo.data.entity.OpenGraph;
 import teo.sprint.navogue.domain.memo.data.req.MemoAddReq;
@@ -35,6 +35,7 @@ import teo.sprint.navogue.domain.user.repository.UserRepository;
 import java.net.URL;
 import java.util.*;
 
+@Slf4j
 @Service
 public class MemoServiceImpl implements MemoService {
     private final WebClient webClient;
@@ -86,9 +87,24 @@ public class MemoServiceImpl implements MemoService {
         User user = userRepository.findByEmail(email).get();
 
         List<MemoListRes> memoList = memoRepositorySupport.getList(type, tag, keyword, user);
+        log.info("memoList" + memoList);
 
-        PageRequest pageRequest = PageRequest.of(page, 6, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return memoRepositorySupport.getSlice(pageRequest, memoList);
+        int pageSize = 6; // 페이지당 데이터 개수
+        int totalElements = memoList.size();
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+
+        int fromIndex = page * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalElements);
+
+        List<MemoListRes> pagedMemoList = memoList.subList(fromIndex, toIndex);
+        for (MemoListRes m : pagedMemoList) {
+            if (m.getContentType().equals(ContentType.URL) && m.getOpenGraph() == null) {
+                m.setOpenGraph(new OpenGraph(0, memoRepository.findById(m.getId()).get(), "no title", "no desc", "https://cdn.vectorstock.com/i/preview-1x/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg"));
+            }
+        }
+        boolean hasNext = page < totalPages - 1;
+
+        return new SliceImpl<>(pagedMemoList, PageRequest.of(page, pageSize), hasNext);
     }
 
     @Override
@@ -106,7 +122,12 @@ public class MemoServiceImpl implements MemoService {
     }
 
     @Override
-    public int update(MemoUpdateReq memoUpdateReq) {
+    public int update(MemoUpdateReq memoUpdateReq) throws Exception {
+        if (memoRepository.findById(memoUpdateReq.getId()).get().getContentType().equals(ContentType.URL)) {
+            openGraphRepository.deleteByMemoId(memoUpdateReq.getId());
+            OpenGraph og = extractOpenGraph(memoUpdateReq.getContent());
+            openGraphRepository.save(og);
+        }
         memoRepository.updateContent(memoUpdateReq.getId(), memoUpdateReq.getContent());
         return memoUpdateReq.getId();
     }

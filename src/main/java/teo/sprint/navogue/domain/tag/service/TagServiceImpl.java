@@ -29,6 +29,7 @@ public class TagServiceImpl implements TagService {
         Memo memo = memoRepository.findById(tagAddReq.getMemoId()).get();
 
         for (String name : tagAddReq.getTagNames()) {
+            if (tagRelationRepository.existsByMemoIdAndTagName(tagAddReq.getMemoId(), name)) continue;
             Tag tag = tagRepository.findByName(name);
 
             if (tag == null) {

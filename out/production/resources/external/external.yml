@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    driverClassName: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://3.35.70.150:3306/navogue
+    username: root
+    password: lily0202
+api:
+  key: 49897bce-9493-4f7c-8e86-681d9b92d1f4
+
+kakao:
+  clientId: b75280e464d73acb9af70f0fb5027d0c
+  redirectUri: http://localhost:5173/oauth

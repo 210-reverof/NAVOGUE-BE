@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import teo.sprint.navogue.domain.memo.data.entity.ContentType;
 import teo.sprint.navogue.domain.memo.data.entity.Memo;
 import teo.sprint.navogue.domain.memo.data.entity.QMemo;
+import teo.sprint.navogue.domain.memo.data.entity.QOpenGraph;
 import teo.sprint.navogue.domain.memo.data.res.MemoListRes;
 import teo.sprint.navogue.domain.tag.data.entity.QTag;
 import teo.sprint.navogue.domain.tag.data.entity.QTagRelation;
@@ -35,6 +36,7 @@ public class MemoRepositorySupport extends QuerydslRepositorySupport {
         QMemo m = QMemo.memo;
         QTagRelation tr = QTagRelation.tagRelation;
         QTag t = QTag.tag;
+        QOpenGraph og = QOpenGraph.openGraph;
         QUser u = QUser.user;
         OrderSpecifier<Boolean> orderByPinned = QMemo.memo.isPinned.desc();  // isPinned 내림차순으로 정렬
 
@@ -52,9 +54,10 @@ public class MemoRepositorySupport extends QuerydslRepositorySupport {
         }
 
         List<MemoListRes> memoListResList = jpaQueryFactory
-                .select(Projections.constructor(MemoListRes.class, m))
+                .select(Projections.constructor(MemoListRes.class, m, og))
                 .from(m)
                 .where(builder)
+                .leftJoin(og).on(og.memo.id.eq(m.id))
                 .orderBy(orderByPinned)
                 .orderBy(m.createdAt.desc())
                 .fetch();
