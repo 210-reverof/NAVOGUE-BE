@@ -35,4 +35,5 @@ public class OpenGraph {
         this.ogDesc = ogDesc;
         this.ogImageUrl = ogImageUrl;
     }
+
 }

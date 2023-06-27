@@ -97,6 +97,11 @@ public class MemoServiceImpl implements MemoService {
         int toIndex = Math.min(fromIndex + pageSize, totalElements);
 
         List<MemoListRes> pagedMemoList = memoList.subList(fromIndex, toIndex);
+        for (MemoListRes m : pagedMemoList) {
+            if (m.getContentType().equals(ContentType.URL) && m.getOpenGraph() == null) {
+                m.setOpenGraph(new OpenGraph(0, memoRepository.findById(m.getId()).get(), "no title", "no desc", "https://cdn.vectorstock.com/i/preview-1x/65/30/default-image-icon-missing-picture-page-vector-40546530.jpg"));
+            }
+        }
         boolean hasNext = page < totalPages - 1;
 
         return new SliceImpl<>(pagedMemoList, PageRequest.of(page, pageSize), hasNext);

@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import teo.sprint.navogue.domain.tag.data.entity.TagRelation;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface TagRelationRepository extends JpaRepository<TagRelation, Intege
 
     @Transactional
     void deleteByMemoId(int id);
+
+    boolean existsByMemoIdAndTagName(@Param("memoId") int memoId, @Param("tagName") String tagName);
 }
