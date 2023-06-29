@@ -33,6 +33,7 @@ public class UserService {
     private String kakaoRedirectUri;
 
     public UserLoginRes login(String code) throws Exception {
+        System.out.println("======================== 인가코드 사용");
         String access_token = getAccessToken(code);
         String email = getUserInfo(access_token);
 
