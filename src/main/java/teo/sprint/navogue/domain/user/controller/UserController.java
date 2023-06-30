@@ -19,7 +19,7 @@ public class UserController {
 
     @GetMapping ("/login")
     public ResponseEntity<UserLoginRes> login(@RequestParam("code") String code) throws Exception {
-        return  ResponseEntity.ok(new UserLoginRes(1L, "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMjI2ODZAbmF2ZXIuY29tIiwiaWF0IjoxNjg3NjgwODQyLCJleHAiOjE5MDM2ODA4NDJ9.HdoXLX2KR5IArs1q2rbYvJrF0fSLGhdgtNlBgSFax1U"));
-        //return ResponseEntity.ok(userService.login(code));
+        //return  ResponseEntity.ok(new UserLoginRes(1L, "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMjI2ODZAbmF2ZXIuY29tIiwiaWF0IjoxNjg3NjgwODQyLCJleHAiOjE5MDM2ODA4NDJ9.HdoXLX2KR5IArs1q2rbYvJrF0fSLGhdgtNlBgSFax1U"));
+        return ResponseEntity.ok(userService.login(code));
     }
 }
